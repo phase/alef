@@ -17,6 +17,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
+    compile 'com.google.guava:guava:29.0-jre'
+    compile 'com.google.code.gson:gson:2.8.6'
     compile 'org.cadixdev:lorenz:0.5.3'
     compile 'org.cadixdev:lorenz-asm:0.5.3'
+    compile 'org.cadixdev:lorenz-io-proguard:0.5.3'
 }

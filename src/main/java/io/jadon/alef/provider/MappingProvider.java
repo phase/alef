@@ -15,6 +15,7 @@ import java.util.Optional;
 public abstract class MappingProvider {
 
     public static MCPProvider MCP = new MCPProvider();
+    public static MojangProvider MOJANG = new MojangProvider();
     protected static File CACHE_DIR = new File("cache/");
 
     @SneakyThrows
