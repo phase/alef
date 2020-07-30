@@ -1,0 +1,5 @@
+cache/
+mappings/*srg
+build/
+.gradle/
+.idea/

@@ -1,0 +1,6 @@
+[submodule "mappings/modern-intermediary"]
+	path = mappings/modern-intermediary
+	url = https://github.com/FabricMC/intermediary
+[submodule "mappings/legacy-intermediary"]
+	path = mappings/legacy-intermediary
+	url = https://github.com/Legacy-Fabric/Legacy-Intermediaries

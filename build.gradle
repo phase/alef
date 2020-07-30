@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'io.jadon'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    compile 'org.cadixdev:lorenz:0.5.3'
+    compile 'org.cadixdev:lorenz-asm:0.5.3'
+}
