@@ -1,5 +1,6 @@
 package io.jadon.alef.provider;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -62,19 +63,24 @@ public class MojangProvider extends MappingProvider {
     public Optional<MappingSet> getMappings(MinecraftVersion minecraftVersion) {
         if (minecraftVersion.ordinal() < MinecraftVersion.v1_14_4.ordinal()) return Optional.empty();
 
-        File proguardFile = new File(CACHE_DIR, minecraftVersion.toString() + "/mojang.proguard");
-        if (!proguardFile.exists()) {
-            proguardFile.getParentFile().mkdirs();
-            JsonObject versionJson = getVersionJson(minecraftVersion).orElse(null);
-            if (versionJson == null) return Optional.empty();
-            JsonObject downloads = versionJson.getAsJsonObject("downloads");
-            // todo: server?
-            String mappingUrl = downloads.getAsJsonObject("client_mappings").get("url").getAsString();
-            InputStream inputStream = new URL(mappingUrl).openStream();
-            copyToFile(inputStream, proguardFile);
-            inputStream.close();
+        MappingSet complete = MappingSet.create();
+        for (String side : Lists.newArrayList("server", "client")) {
+            File proguardFile = new File(CACHE_DIR, minecraftVersion.toString() + "/mojang-" + side + ".proguard");
+            if (!proguardFile.exists()) {
+                proguardFile.getParentFile().mkdirs();
+                JsonObject versionJson = getVersionJson(minecraftVersion).orElse(null);
+                if (versionJson == null) return Optional.empty();
+                JsonObject downloads = versionJson.getAsJsonObject("downloads");
+                // todo: server?
+                String mappingUrl = downloads.getAsJsonObject(side + "_mappings").get("url").getAsString();
+                InputStream inputStream = new URL(mappingUrl).openStream();
+                copyToFile(inputStream, proguardFile);
+                inputStream.close();
+            }
+            MappingSet sideMappings = new ProGuardReader(new FileReader(proguardFile)).read().reverse();
+            complete = complete.merge(sideMappings);
         }
 
-        return Optional.of(new ProGuardReader(new FileReader(proguardFile)).read().reverse());
+        return Optional.of(complete);
     }
 }

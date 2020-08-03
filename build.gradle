@@ -11,6 +11,11 @@ repositories {
     maven {
         url 'https://oss.sonatype.org/content/groups/public/'
     }
+
+    maven {
+        name = 'Fabric'
+        url = 'http://maven.modmuss50.me/'
+    }
 }
 
 dependencies {
@@ -22,4 +27,15 @@ dependencies {
     compile 'org.cadixdev:lorenz:0.5.3'
     compile 'org.cadixdev:lorenz-asm:0.5.3'
     compile 'org.cadixdev:lorenz-io-proguard:0.5.3'
+    compile('net.fabricmc:lorenz-tiny:2.0.0+build.2') {
+        exclude group: "org.cadixdev", module: "lorenz"
+    }
+    compile 'net.fabricmc:tiny-mappings-parser:0.2.1.13'
+
+    // asm
+    implementation 'org.ow2.asm:asm:8.0.1'
+    implementation 'org.ow2.asm:asm-util:8.0.1'
+    implementation 'org.ow2.asm:asm-tree:8.0.1'
+    implementation 'org.ow2.asm:asm-commons:8.0.1'
+    implementation 'org.ow2.asm:asm-analysis:8.0.1'
 }

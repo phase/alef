@@ -3,10 +3,12 @@ package io.jadon.alef;
 import io.jadon.alef.match.Match;
 import io.jadon.alef.match.MatchProvider;
 import io.jadon.alef.provider.MappingProvider;
+import io.jadon.alef.provider.spigot.SpigotConflictFixer;
 import lombok.SneakyThrows;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.io.MappingFormats;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -18,6 +20,33 @@ public class Alef {
 
     @SneakyThrows
     public static void main(String[] args) {
+        File obfSpigotJar = new File("/home/phase/projects/minecraft/spigot/obf-spigot-1.16.1.jar");
+        MappingSet mappingSet = SpigotConflictFixer.generateMappingFixes(obfSpigotJar);
+        MappingFormats.SRG.write(mappingSet, Paths.get("mappings/1.16.1-obf-spigot-conflict-fix.srg"));
+    }
+
+    @SneakyThrows
+    public static void main5(String[] args) {
+//        MappingSet mappings = MappingProvider.MOJANG.getMappings(MinecraftVersion.v1_16_1).orElse(null);
+//        MappingFormats.TSRG.write(mappings, Paths.get("mappings/1.16.1-mojang.srg"));
+        MappingSet mappingSet = MappingProvider.YARN.getMappings(MinecraftVersion.v1_16_1).orElse(null);
+        MappingFormats.SRG.write(mappingSet, Paths.get("mappings/1.16.1-yarn.srg"));
+        MappingSet spigot = MappingProvider.SPIGOT.getMappings(MinecraftVersion.v1_16_1).orElse(null);
+        MappingFormats.SRG.write(spigot, Paths.get("mappings/1.16.1-spigot.srg"));
+        MappingFormats.SRG.write(spigot.reverse(), Paths.get("mappings/1.16.1-spigot-reversed.srg"));
+    }
+
+    @SneakyThrows
+    public static void main4(String[] args) {
+        MinecraftVersion version = MinecraftVersion.s1_16_2_pre1;
+        MappingSet yarn = MappingProvider.YARN.getMappings(version).orElse(null);
+        MappingSet mojang = MappingProvider.MOJANG.getMappings(version).orElse(null);
+        MappingSet merged = yarn.reverse().merge(mojang);
+        MappingFormats.SRG.write(merged, Paths.get("mappings/" + version.toString() + "-yarn-to-mojang.srg"));
+    }
+
+    @SneakyThrows
+    public static void main3() {
         MinecraftVersion latest = MinecraftVersion.v1_16_1;
         MinecraftVersion snapshot = MinecraftVersion.s1_16_2_pre1;
         MappingProvider provider = MappingProvider.MOJANG;
