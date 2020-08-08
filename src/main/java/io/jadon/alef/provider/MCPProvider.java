@@ -28,11 +28,18 @@ public class MCPProvider extends MappingProvider {
 
     public Optional<String> getMcpVersion(MinecraftVersion minecraftVersion) {
         switch (minecraftVersion) {
+            case v1_16_1:
             case v1_15_1:
                 return Optional.of("20200729-1.15.1");
             case v1_14_4:
             case v1_14_3:
                 return Optional.of("20200119-1.14.3");
+            case v1_13_2:
+            case v1_13_1:
+            case v1_13:
+                return Optional.of("20190530-1.13.2");
+            case v1_12_2:
+                return Optional.of("20180814-1.12");
             default:
                 return Optional.empty();
         }
@@ -66,7 +73,7 @@ public class MCPProvider extends MappingProvider {
     }
 
     @SneakyThrows
-    public void downloadModernSnapshotCsvs(File destinationDir, String mcpVersion) {
+    public void downloadSnapshotCsvs(File destinationDir, String mcpVersion) {
         destinationDir.mkdirs();
         URL url = new URL(SNAPSHOT_URL.replaceAll("%s", mcpVersion));
         ZipInputStream inputStream = new ZipInputStream(url.openStream());
@@ -93,11 +100,28 @@ public class MCPProvider extends MappingProvider {
         return mappings;
     }
 
+    public Optional<MappingSet> getLegacyMappings(MinecraftVersion version) {
+        return getMcpVersion(version).map(mcpVersion -> getLegacyMappings(version, mcpVersion));
+    }
+
     @SneakyThrows
-    public MappingSet getLegacyMappings(MinecraftVersion minecraftVersion) {
-        File csrgFile = new File(CACHE_DIR, minecraftVersion.toString() + "/mcp.csrg");
+    public MappingSet getLegacyMappings(MinecraftVersion minecraftVersion, String mcpVersion) {
+        File versionDir = new File(CACHE_DIR, minecraftVersion.toString());
+        File csrgFile = new File(versionDir, "searge.csrg");
+        File mcpFile = new File(versionDir, "mcp.tsrg");
+        downloadSnapshotCsvs(versionDir, mcpVersion);
         downloadLegacy(csrgFile, minecraftVersion);
-        return MappingFormats.CSRG.read(csrgFile.toPath());
+
+        Map<String, String> mcpFields = parseCsv(new File(versionDir, "fields.csv"));
+        Map<String, String> mcpMethods = parseCsv(new File(versionDir, "methods.csv"));
+        MappingSet srgMappings = MappingFormats.CSRG.read(csrgFile.toPath());
+
+        for (TopLevelClassMapping classMapping : srgMappings.getTopLevelClassMappings()) {
+            replaceSrgNames(mcpFields, mcpMethods, classMapping);
+        }
+
+        MappingFormats.TSRG.write(srgMappings, mcpFile.toPath());
+        return srgMappings;
     }
 
     public Optional<MappingSet> getModernMappings(MinecraftVersion version) {
@@ -109,7 +133,7 @@ public class MCPProvider extends MappingProvider {
         File versionDir = new File(CACHE_DIR, minecraftVersion.toString());
         File seargeFile = new File(versionDir, "searge.tsrg");
         File mcpFile = new File(versionDir, "mcp.tsrg");
-        downloadModernSnapshotCsvs(versionDir, mcpVersion);
+        downloadSnapshotCsvs(versionDir, mcpVersion);
         downloadModernSrg(seargeFile, minecraftVersion);
         Map<String, String> mcpFields = parseCsv(new File(versionDir, "fields.csv"));
         Map<String, String> mcpMethods = parseCsv(new File(versionDir, "methods.csv"));
@@ -145,7 +169,7 @@ public class MCPProvider extends MappingProvider {
     public Optional<MappingSet> getMappings(MinecraftVersion minecraftVersion) {
         if (!minecraftVersion.isRelease()) return Optional.empty();
         if (minecraftVersion.ordinal() <= MinecraftVersion.v1_12_2.ordinal()) {
-            return Optional.of(getLegacyMappings(minecraftVersion));
+            return getLegacyMappings(minecraftVersion);
         }
         return getModernMappings(minecraftVersion);
     }
