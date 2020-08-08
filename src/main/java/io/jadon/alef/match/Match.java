@@ -69,7 +69,7 @@ public class Match {
                     // chain methods
                     for (MethodMatch methodMatch : classMatch.methodMatches) {
                         for (MethodMatch otherMethodMatch : otherClassMatch.methodMatches) {
-                            if (methodMatch.newName.equals(otherMethodMatch.oldName)) {
+                            if (methodMatch.newName.equals(otherMethodMatch.oldName) && methodMatch.newSignature.equals(otherMethodMatch.oldSignature)) {
                                 chainedClass.methodMatches.add(new MethodMatch(methodMatch.oldName,
                                         methodMatch.oldSignature, otherMethodMatch.newName, otherMethodMatch.newSignature));
                                 break;

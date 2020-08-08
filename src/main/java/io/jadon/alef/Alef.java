@@ -19,7 +19,7 @@ import java.util.Optional;
 public class Alef {
 
     @SneakyThrows
-    public static void main(String[] args) {
+    public static void main6(String[] args) {
         File obfSpigotJar = new File("/home/phase/projects/minecraft/spigot/obf-spigot-1.16.1.jar");
         MappingSet mappingSet = SpigotConflictFixer.generateMappingFixes(obfSpigotJar);
         MappingFormats.SRG.write(mappingSet, Paths.get("mappings/1.16.1-obf-spigot-conflict-fix.srg"));
@@ -46,10 +46,10 @@ public class Alef {
     }
 
     @SneakyThrows
-    public static void main3() {
+    public static void main(String[] args) {
         MinecraftVersion latest = MinecraftVersion.v1_16_1;
-        MinecraftVersion snapshot = MinecraftVersion.s1_16_2_pre1;
-        MappingProvider provider = MappingProvider.MOJANG;
+        MinecraftVersion snapshot = MinecraftVersion.s1_16_2_rc1;
+        MappingProvider provider = MappingProvider.YARN;
 
         createMigrationMappings(latest, snapshot, provider).ifPresent(mappings -> {
             try {

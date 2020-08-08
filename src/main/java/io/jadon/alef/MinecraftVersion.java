@@ -194,6 +194,9 @@ public enum MinecraftVersion {
     s20w29a("20w29a"),
     s20w30a("20w30a"),
     s1_16_2_pre1("1.16.2-pre1"),
+    s1_16_2_pre2("1.16.2-pre2"),
+    s1_16_2_pre3("1.16.2-pre3"),
+    s1_16_2_rc1("1.16.2-rc1"),
     ;
     private final String version;
 
