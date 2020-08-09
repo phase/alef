@@ -8,8 +8,6 @@ import io.jadon.alef.provider.MappingProvider;
 import lombok.SneakyThrows;
 import org.cadixdev.lorenz.MappingSet;
 import org.cadixdev.lorenz.io.MappingFormats;
-import org.cadixdev.lorenz.merge.*;
-import org.cadixdev.lorenz.model.InnerClassMapping;
 import org.cadixdev.lorenz.model.TopLevelClassMapping;
 
 import java.io.File;
@@ -82,14 +80,6 @@ public class SpigotProvider extends MappingProvider {
         MappingSet classMappings = MappingFormats.CSRG.read(classCsrg.toPath());
         MappingSet memberMappings = MappingFormats.CSRG.read(memberCsrg.toPath());
         MappingSet merged = classMappings.merge(memberMappings);
-        // fix merging
-        for (TopLevelClassMapping classMapping : classMappings.getTopLevelClassMappings()) {
-            for (InnerClassMapping innerClassMapping : classMapping.getInnerClassMappings()) {
-                merged.getClassMapping(classMapping.getObfuscatedName()).ifPresent(c -> {
-                    c.createInnerClassMapping(innerClassMapping.getObfuscatedName(), innerClassMapping.getDeobfuscatedName());
-                });
-            }
-        }
         for (TopLevelClassMapping classMapping : merged.getTopLevelClassMappings()) {
             String newPackage = newPackages.getOrDefault(classMapping.getDeobfuscatedPackage(), classMapping.getDeobfuscatedPackage());
             classMapping.setDeobfuscatedName(newPackage + classMapping.getSimpleDeobfuscatedName());

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 public enum MatchProvider {
-
+    ALEF("mappings/matches"),
     LEGACY("mappings/legacy-intermediary/matches/"),
     MODERN("mappings/modern-intermediary/matches/");
 
@@ -23,10 +23,10 @@ public enum MatchProvider {
     }
 
     public static Optional<File> getMatchFile(MinecraftVersion from, MinecraftVersion to) {
-        Optional<File> match = LEGACY.findMatchFile(from, to);
-        if (match.isPresent()) {
-            return match;
-        }
+        Optional<File> match = ALEF.findMatchFile(from, to);
+        if (match.isPresent()) return match;
+        match = LEGACY.findMatchFile(from, to);
+        if (match.isPresent()) return match;
         return MODERN.findMatchFile(from, to);
     }
 

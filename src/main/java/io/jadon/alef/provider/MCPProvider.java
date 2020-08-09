@@ -40,6 +40,16 @@ public class MCPProvider extends MappingProvider {
                 return Optional.of("20190530-1.13.2");
             case v1_12_2:
                 return Optional.of("20180814-1.12");
+            case v1_11_2:
+                return Optional.of("20170612-1.11");
+            case v1_10_2:
+                return Optional.of("20161117-1.10.2");
+            case v1_9_4:
+                return Optional.of("20160627-1.9.4");
+            case v1_8_9:
+                return Optional.of("20160301-1.8.9");
+            case v1_7_10:
+                return Optional.of("20140925-1.7.10");
             default:
                 return Optional.empty();
         }
