@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor
 public enum MinecraftVersion {
+    s1_16_combat_0("1.16-combat_0"),
     v1_7_10("1.7.10"),
     v1_8_9("1.8.9"),
     v1_9_4("1.9.4"),

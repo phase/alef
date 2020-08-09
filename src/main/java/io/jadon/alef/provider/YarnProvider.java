@@ -1,7 +1,6 @@
 package io.jadon.alef.provider;
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Resources;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.jadon.alef.MinecraftVersion;

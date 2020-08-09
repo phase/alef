@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Optional;
 
 public class MojangProvider extends MappingProvider {
@@ -42,7 +43,7 @@ public class MojangProvider extends MappingProvider {
      * @return json if it exists
      */
     @SneakyThrows
-    public static Optional<JsonObject> getVersionJson(MinecraftVersion minecraftVersion) {
+    public static Optional<String> getVersionJson(MinecraftVersion minecraftVersion) {
         JsonObject versionManifestJson = getVersionManifestJson();
         // find the version we want
         for (JsonElement version : versionManifestJson.getAsJsonArray("versions")) {
@@ -51,25 +52,35 @@ public class MojangProvider extends MappingProvider {
                 // grab the url and read it
                 URL url = new URL(versionObj.get("url").getAsString());
                 String versionJson = Resources.toString(url, Charset.defaultCharset());
-                return Optional.of(JsonParser.parseString(versionJson).getAsJsonObject());
+                return Optional.of(versionJson);
             }
         }
         return Optional.empty();
     }
 
+    @SneakyThrows
+    public static Optional<JsonObject> downloadVersionJson(MinecraftVersion version, File file) {
+        if (file.exists()) return Optional.of(JsonParser.parseReader(new FileReader(file)).getAsJsonObject());
+        String versionJson = getVersionJson(version).orElse(null);
+        if (versionJson == null) return Optional.empty();
+        Files.write(file.toPath(), versionJson.getBytes());
+        return Optional.of(JsonParser.parseString(versionJson).getAsJsonObject());
+    }
 
     @Override
     @SneakyThrows
     public Optional<MappingSet> getMappings(MinecraftVersion minecraftVersion) {
-        if (minecraftVersion.ordinal() < MinecraftVersion.v1_14_4.ordinal()) return Optional.empty();
+        if (minecraftVersion.ordinal() < MinecraftVersion.v1_14_4.ordinal() && !minecraftVersion.name().contains("combat")) return Optional.empty();
 
         MappingSet complete = MappingSet.create();
         for (String side : Lists.newArrayList("server", "client")) {
             File proguardFile = new File(CACHE_DIR, minecraftVersion.toString() + "/mojang-" + side + ".proguard");
             if (!proguardFile.exists()) {
                 proguardFile.getParentFile().mkdirs();
-                JsonObject versionJson = getVersionJson(minecraftVersion).orElse(null);
-                if (versionJson == null) return Optional.empty();
+                JsonObject versionJson = downloadVersionJson(minecraftVersion, new File(CACHE_DIR, minecraftVersion.toString() + "/" + minecraftVersion.toString() + ".json")).orElse(null);
+                if (versionJson == null) {
+                    System.out.println("version json is null for "+  minecraftVersion.name() + " " + minecraftVersion.toString());
+                    return Optional.empty();}
                 JsonObject downloads = versionJson.getAsJsonObject("downloads");
                 // todo: server?
                 String mappingUrl = downloads.getAsJsonObject(side + "_mappings").get("url").getAsString();

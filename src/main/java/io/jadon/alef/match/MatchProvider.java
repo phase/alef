@@ -58,4 +58,22 @@ public enum MatchProvider {
         return Optional.ofNullable(chainedMatch);
     }
 
+    public static Optional<Match> chainMatches(MinecraftVersion... versions) {
+        Match chainedMatch = null;
+        for (int i = 0; i < versions.length - 1; i++) {
+            MinecraftVersion from = versions[i];
+            MinecraftVersion to = versions[i + 1];
+            Match match = getMatch(from, to)
+                    .orElseThrow(() -> new IllegalStateException("Can't find match from " + from.toString()
+                            + " to " + to.toString()));
+            if (chainedMatch == null) {
+                chainedMatch = match;
+            } else {
+                chainedMatch = chainedMatch.chain(match);
+                System.out.println("Found " + chainedMatch.getClassMatches().size() + " class matches");
+            }
+        }
+        return Optional.ofNullable(chainedMatch);
+    }
+
 }
