@@ -19,6 +19,10 @@ public enum MatchProvider {
         if (match.exists() && match.isFile()) {
             return Optional.of(match);
         }
+        match = new File(this.directory, from.toString() + "-" + to.toString() + ".csrg");
+        if (match.exists() && match.isFile()) {
+            return Optional.of(match);
+        }
         return Optional.empty();
     }
 

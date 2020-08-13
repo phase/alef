@@ -203,6 +203,8 @@ public enum MinecraftVersion {
     s1_16_2_pre2("1.16.2-pre2"),
     s1_16_2_pre3("1.16.2-pre3"),
     s1_16_2_rc1("1.16.2-rc1"),
+    s1_16_2_rc2("1.16.2-rc2"),
+    v1_16_2("1.16.2"),
     ;
     private final String version;
 
